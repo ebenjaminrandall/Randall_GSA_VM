@@ -35,7 +35,7 @@ Nsamples = 1e3;
 bounds = [low(INDMAP) hi(INDMAP)]; 
 data.time = Tnew; 
 
-outputs = genSob_v4(Nsamples,bounds,data); 
+outputs = tvSob(Nsamples,bounds,data); 
 
 params = {'$A$', '$B$', ...
     '$K_b$','$K_{pb}$','$K_{pr}$','$K_s$', ...

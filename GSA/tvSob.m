@@ -1,7 +1,6 @@
-function outputs = genSob_v4(nsamples,bounds,data,varargin)
+function outputs = tvSob(nsamples,bounds,data,varargin)
 %{
-Version 4 does not have try/catch to determine where the model crashes. 
-
+This code computes the scalar and time-varying Sobol' indices. 
 
 Inputs: 
     nsamples:   integer for number of sample points taken from space.
