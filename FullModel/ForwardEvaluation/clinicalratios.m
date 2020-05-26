@@ -1,5 +1,20 @@
 function [values,indices,ratios,alphaplot] = clinicalratios(data)
+%{
+clinicalratios.m
+This function computes the clinical ratios (alpha, beta, and gamma) from
+the data.
 
+Inputs:
+    data:   structure that contains all preprocessed VM data
+
+Outputs:
+    values:     important values within the data
+    indices:    time indices corresponding to values
+    ratios:     vector of the 3 ratios
+    alphaplot:  structure containing components of alpha linear regression
+%}
+
+%Extract data from structure
 Tnew  = data.Tdata; 
 Pnew  = data.Pdata; 
 Hnew  = data.Hdata;
@@ -91,3 +106,4 @@ alphaplot.x_alpha = x_alpha;
 alphaplot.yfit_alpha = yfit_alpha;
 alphaplot.p_alpha = p_alpha; 
 
+end

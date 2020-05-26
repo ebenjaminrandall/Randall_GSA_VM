@@ -1,11 +1,20 @@
-%DriverBasic_opt 
+%{
+DriverBasic_plotopt.m
+This script plots the optimized solutions computed DriverBasic_LM.m of the
+m3 reduced model.
 
+It requires 'optHR.mat'.
+%}
+
+%Clear workspace
 clear all
 close all
 
 %% Inputs 
 
 load optHR.mat 
+
+printon = 0; %Print for plots
 
 %% Make prediction plots 
 
@@ -66,4 +75,3 @@ if printon == 1
     print(hfig1,'-dpng','opthr.png')
     print(hfig2,'-dpng','eff.png')
 end 
-

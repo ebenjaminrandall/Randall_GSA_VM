@@ -1,4 +1,15 @@
 function Init = initialconditions(pars,data)
+%{
+initialconditions.m
+This function computes the initial conditions for the m2 reduced model.
+
+Inputs:
+    pars:   vector of log-scaled nominal parameter values
+    data:   structure that contains all preprocessed VM data
+
+Outputs:
+    Init:   vector of initial conditions for differential equations
+%}
 
 %% PARAMETERS 
 
@@ -39,3 +50,5 @@ Ts_0  = Ks*Gs_0;
 %% OUTPUT
 
 Init = [Tpb_0; Tpr_0; Ts_0; data.Hdata(1)];
+
+end

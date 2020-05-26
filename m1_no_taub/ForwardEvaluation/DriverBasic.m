@@ -1,14 +1,28 @@
-%DriverBasic 
+%{
+DriverBasic.m
+This script performs a forward evaulation of the m1 reduced model.
 
+It requires the 'FP2_VM6_long.mat' data. 
+ 
+The script generates a structure called 'data' to be used in other 
+functions, gets nominal parameter values, evaluates the forward model by 
+calling the Fortran-created executable, calculates clinical ratios, and 
+creates plots.
+
+The model solution and variables are saved in 'nomHR.mat'.
+%} 
+
+%Clear workspace
 clear all
-%close all
+close all
 
+%Begin timing
 tic 
 
 %% Inputs
 
-echoon  = 1; 
-printon = 0; 
+echoon  = 1; %Echo for executable status in model solve
+printon = 0; %Print for data figures
 
 %% Load data and preprocess data 
 
@@ -42,11 +56,11 @@ dt = mean(diff(Tnew));
 
 Pdiff    = diff(Pthnew); 
 [~,ts]   = max(Pdiff);      %VM start index
-[~,te]   = min(Pdiff);     %VM end index
+[~,te]   = min(Pdiff);      %VM end index
 h        = Hnew(te:round(te + 5/dt));
 hdiff    = diff(h);
 [~,ind1] = min(hdiff);
-tr       = te + ind1;                      %VM reset index
+tr       = te + ind1;       %VM reset index
 
 %% Find steady-state baseline values up to VM start
 
@@ -65,10 +79,12 @@ if isempty(ind2) == 1
 else 
     t4 = tr + ind2 - 1;
 end 
+
 %Check in case t4 > length of signal 
 if t4 > length(SPnew)
     t4 = length(SPnew); 
 end 
+
 %Check in case t4 = tr
 if t4 == tr 
     ind2 = find(SPnew(tr+round(5/dt):end) >= Pbar,1,'last');
@@ -79,7 +95,7 @@ end
 
 Rnew1 = -Rnew; 
 
-[a,aloc] = findpeaks(Rnew1(1:ts-1)); 
+[a,~] = findpeaks(Rnew1(1:ts-1)); 
 [b,bloc] = findpeaks(-Rnew1(1:ts-1)); 
 b = -b; 
 R_exh = mean(a); 
@@ -177,7 +193,7 @@ x_alpha = alphaplot.x_alpha;
 yfit_alpha = alphaplot.yfit_alpha;
 p_alpha = alphaplot.p_alpha; 
 
-%% :Set plot limits
+%% Set plot limits
 
 m_eff = min(min(Tpb,Ts)); 
 if m_eff < 0 
@@ -279,7 +295,7 @@ set(gca,'FontSize',25)
 legend([h1,h2],'PP','SBP')
 set(gca,'XTick',xtick);
 
-%Thoracic pressure 
+%Thoracic Pressure 
 hfig3 = figure(3);
 clf
 patch(x1,yPth,gray)
@@ -385,7 +401,7 @@ legend([h1 h2],'T_{p,b}','T_s')
 %ylim([-.1 1.1])
 set(gca,'XTick',xtick);
 
-%Respiration signal
+%Respiration Signal
 hfig8 = figure(8); 
 clf
 patch(x1,yTpr,gray)
@@ -432,5 +448,5 @@ ylabel('SBP (mmHg)')
 set(gca,'FontSize',25)
 set(gca,'Xtick',xtick)
 
-
+%End timing
 elapsed_time = toc

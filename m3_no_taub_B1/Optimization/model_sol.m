@@ -1,5 +1,23 @@
 function [HR,rout,J,Outputs] = model_sol(pars,data)
+%{
+model_sol.m
+This function calls the Fortran-created executable to solve the m3 reduced
+model.
 
+Inputs:
+    pars:   vector of log-scaled nominal parameter values
+    data:   structure that contains all preprocessed VM data
+
+Outputs:
+    HR:         heart rate solution to differential equations
+    rout:       residual vector (the relative difference between model and
+                data)
+    J:          scalar cost function
+    Outputs:    matrix containing time and other solutions to differential
+                equations
+%}
+
+%Recover parameters
 pars = exp(pars); 
 
 %% Unpack structure 
@@ -90,6 +108,7 @@ else
         [status,blah] = unix('./driver');
     end 
 end 
+
 s    = load('cont.out');
 time = s(:,1); 
 Tpb  = s(:,2); 
@@ -104,7 +123,8 @@ if round(time(end-1),2) == round(tspan(end),2)
     Ts = Ts(1:end-1);
     HR = HR(1:end-1); 
 end 
-%% Interdpolate solution and calculate outputs
+
+%% Interpolate solution and calculate outputs
 
 HM = max(Hdata); 
 
@@ -115,4 +135,4 @@ J = rout'*rout;
 
 Outputs = [time,Tpb,Ts,Tpr]; 
 
-
+end

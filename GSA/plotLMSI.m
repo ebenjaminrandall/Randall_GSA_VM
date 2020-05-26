@@ -1,19 +1,29 @@
 %{
-Plots limited-memory time-varying Sobol' indices. 
-%} 
+plotLMSI.m
+This script plots limited-memory time-varying Sobol' indices of the full 
+model.
 
+It requires 'differentwindows.mat'.
+%}
+
+%Clear workspace
 clear all
 close all 
 
+%Load data
 load differentwindows.mat
 
-printon = 1; 
+%Inputs
+printon = 0; 
 
+%Preprocess data
 xx = 1:length(Tnew(2:end)); %find(Tnew >= 15 & Tnew <= Tnew(end)-15); 
 tt = Tnew(2:end); 
 tt = tt - tt(1); 
 
 xlimits = [time(1) time(end)]; %[0 60]; 
+
+%Thresholds
 eta1 = 1e-1; 
 eta2 = 1e-3; 
 fontS = 10; 
@@ -102,6 +112,8 @@ ytick = 0:.005:ylimits(end);
 set(gca,'Ytick',ytick)
 
 legend(h,params(INDMAP(I_STi(15:length(I_STi)))),'interpreter','latex','location','northwest') 
+
+%% Print figs
 
 if printon == 1
     print(hfig10,'-depsc2','STiLM_most.eps')

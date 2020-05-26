@@ -1,19 +1,28 @@
 %{
-Plots pointwise-in-time time-varying Sobol' indices. 
-%} 
+plotPTSI.m
+This script plots pointwise-in-time Sobol' indices of the full model.
 
+It requires 'differentwindows.mat'.
+%}
+
+%Clear workspace
 clear all
 close all 
 
+%Load data
 load differentwindows.mat
 
-printon = 1; 
+%Inputs
+printon = 0; 
 
+%Preprocess data
 xx = 1:length(Tnew); 
 tt = Tnew; 
 tt = tt - tt(1); 
 
 xlimits = [time(1) time(end)]; %[0 60]; 
+
+%Thresholds
 eta1 = 1e-1; 
 eta2 = 1e-3; 
 fontS = 10; 

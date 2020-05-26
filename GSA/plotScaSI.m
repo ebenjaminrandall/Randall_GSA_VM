@@ -1,17 +1,32 @@
+%{
+plotScaSI.m
+This script plots ranked scalar Sobol' indices of the full model.
 
+It requires 'differentwindows.mat' and 'sens.mat' in the Full Model LSA folder, i.e. it requires
+'../FullModel/LSA/sens.mat'.
+%}
+
+%Clear workspace
 clear all
-%close all 
+close all 
 
+%Input
+printon = 0; %Print for ranking
+
+%Load data
 load differentwindows.mat
 load ../FullModel/LSA/sens.mat
 
+%Get ranking
 [Rsens,Isens] = sort(sens_norm(1:23),'descend');
 
+%Thresholds
 eta1 = 1e-1; 
 eta2 = 1e-3;
 
 %% Scalar
 
+%Generate figure
 hfig1 = figure(1); 
 clf
 set(gcf,'units','normalized','outerposition',[0 0.05 .25 .15]);
@@ -41,6 +56,8 @@ ytick = [1e-4 1e-2 1];
 set(gca,'Ytick',ytick)
 set(gca,'YScale','log')
 
-print(hfig1,'-dpng','STi_scalar.png')
-print(hfig1,'-depsc2','-tiff','-r300','-painters','STi_sca.eps')
+if printon == 1
+    print(hfig1,'-dpng','STi_scalar.png')
+    print(hfig1,'-depsc2','-tiff','-r300','-painters','STi_sca.eps')
+end
 

@@ -116,12 +116,17 @@ end
 
 %% Evaluate function over the rows of C and Ai 
 
-% Solve model initially 
+%Solve model initially 
 initsoln = model_wrap_GSA(C(1,:),data); 
+
 if length(initsoln) == 1
     scalar = 1; 
+    
+    %Preallocate 
     fC_sca = ones(2*M,1);
     fAi_sca = ones(M*p,1);
+    
+    %Add initial solve
     fC_sca(1) = initsoln;
 else
     scalar = 0;
@@ -130,28 +135,32 @@ else
     end
     time = data.time;
     
+    %Determine orientation of solution
     [r,c] = size(initsoln);
     if r>c
         column = 1;
         initsoln = initsoln';
     end    
+    
+    %Preallocate
     fC_gen  = ones(2*M, length(time));
     fC_sca  = ones(2*M,1);
     fAi_gen = ones(M*p, length(time));
     fAi_sca = ones(M*p,1);
+    
+    %Add initial solve
     fC_gen(1,:) = initsoln;
     fC_sca(1) = norm(fC_gen(1,:));
 end
 
-% Solve the model the rest of the way
-
+%Solve the model the rest of the way
 if parallel %Only if 'parallel' is 'on'
     parfor i = 2:2*M
-
         %Solve model 
         s_C = model_wrap_GSA(C(i,:),data); 
         sol_C = s_C; 
         
+        %Store solution properly
         if scalar
             fC_sca(i)   = sol_C;
         else
@@ -164,11 +173,11 @@ if parallel %Only if 'parallel' is 'on'
     end
 
     parfor i = 1:M*p
-
-        % Solve model 
+        %Solve model 
         s_Ai = model_wrap_GSA(Ai(i,:),data); 
         sol_Ai = s_Ai; 
         
+        %Store solution properly
         if scalar
             fAi_sca(i)   = sol_Ai; 
         else 
@@ -184,6 +193,7 @@ else
         %Solve model 
         sol_C = model_wrap_GSA(C(i,:),data); 
         
+        %Store solution properly
         if scalar
             fC_sca(i) = sol_C;  
         else 
@@ -199,6 +209,7 @@ else
         % Solve model  
         sol_Ai = model_wrap_GSA(Ai(i,:),data); 
         
+        %Store solution properly
         if scalar
             fAi_sca(i)   = sol_Ai; 
         else 
@@ -213,6 +224,7 @@ end
 
 %% Determine time-varying variances 
 
+%Separate solutions
 fA_sca = fC_sca(1:M);
 fB_sca = fC_sca(M+1:end);
 
@@ -221,8 +233,11 @@ if ~scalar
     fB_gen = fC_gen(M+1:end, :);
 end
 
+%Preallocate
 VarSi_sca = ones(p,1);
 VarSTi_sca = ones(p,1);
+
+%Solve variances for main and total effect SI
 for i = 1:p
     VarSi_sca(i) = (1/M)*sum(fB_sca.*(fAi_sca(M*(i-1)+1:M*i)-fA_sca));
     
@@ -231,9 +246,12 @@ end
 VarY_sca = var(fC_sca);
 
 if ~scalar
+    %Preallocate
     VarSi_gen = ones(p, length(time));
     VarSTi_gen = ones(p, length(time));
     VarY_gen   = ones(1, length(time));
+    
+    %Solve variances for main and total effect SI
     for i = 1:p
         for j = 1:length(time)
             VarSi_gen(i,j) = (1/M)*sum(fB_gen(:,j).*(fAi_gen(M*(i-1)+1:M*i,j)-fA_gen(:,j)));
@@ -247,11 +265,13 @@ if ~scalar
     end
 end
 
+%Compute scalar SI
 Si_sca = VarSi_sca/VarY_sca;
 STi_sca = VarSTi_sca/VarY_sca;
 
 %% Outputs
 
+%Determine if scalar or not and save properly
 if scalar == 1
     outputs.varSi  = VarSi_sca;
     outputs.varSTi = VarSTi_sca;
@@ -275,6 +295,7 @@ else
     
 end 
 
+%Delete parallel pool
 if parallel
     delete(gcp('nocreate'));
 end

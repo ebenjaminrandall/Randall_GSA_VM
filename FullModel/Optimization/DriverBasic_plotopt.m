@@ -1,11 +1,20 @@
-%DriverBasic_opt 
+%{
+DriverBasic_plotopt.m
+This script plots the optimized solutions computed DriverBasic_LM.m of the
+full model.
 
+It requires 'optHR.mat'.
+%}
+
+%Clear workspace
 clear all
 close all
 
 %% Inputs 
 
 load optHR.mat 
+
+printon = 0; %Print for plots
 
 %% Make prediction plots 
 
@@ -59,8 +68,10 @@ xlabel('Time (s)')
 %ylim([-.1 1.1])
 set(gca,'XTick',xtick);
 
-print(hfig1,'-depsc2','opthr.eps')
-print(hfig2,'-depsc2','eff.eps')
+if printon == 1
+    print(hfig1,'-depsc2','opthr.eps')
+    print(hfig2,'-depsc2','eff.eps')
 
-print(hfig1,'-dpng','opthr.png')
-print(hfig2,'-dpng','eff.png')
+    print(hfig1,'-dpng','opthr.png')
+    print(hfig2,'-dpng','eff.png')
+end
