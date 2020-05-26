@@ -11,3 +11,5 @@ The folders m1_no_taub, m2_no_taub_B0, and m3_no_taub_B1 are structured similarl
 The folder GSA contains the code tvSob.m that computes the scalar and time-varying Sobol' indices discussed in the manuscript. 
 
 The folder Figure5 creates the plots for Figure 5.  
+
+The release of version 1 can be found at DOI: 10.5281/zenodo.3856447. 
