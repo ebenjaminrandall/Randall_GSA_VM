@@ -21,6 +21,7 @@ n = 200;
 
 figure(1)
 clf
+set(gcf,'renderer','Painters')
 
 p = pars_LM;
 
@@ -36,7 +37,7 @@ for i = 1:length(q_w)
     
     figure(1)
     hold on 
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -46,6 +47,7 @@ clear p s q_w
 
 figure(2)
 clf
+set(gcf,'renderer','Painters')
 
 p = pars_LM; 
 
@@ -61,7 +63,7 @@ for i = 1:length(s_s)
     
     figure(2)
     hold on  
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -71,6 +73,7 @@ clear p s s_s
 
 figure(3)
 clf
+set(gcf,'renderer','Painters')
 
 p = pars_LM; 
 
@@ -86,7 +89,7 @@ for i = 1:length(B)
     
     figure(3)
     hold on 
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -96,6 +99,7 @@ clear p s B
 
 figure(4)
 clf
+set(gcf,'renderer','Painters')
 
 p = pars_LM; 
 
@@ -112,7 +116,7 @@ for i = 1:length(s_pb)
     
     figure(4)
     hold on
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -122,6 +126,7 @@ clear p s s_pb
 
 figure(5)
 clf
+set(gcf,'renderer','Painters')
 
 p = pars_LM; 
 
@@ -137,7 +142,7 @@ for i = 1:length(tau_s)
     
     figure(5)
     hold on  
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -146,6 +151,8 @@ clear p s tau_s
 %% tau_H
 
 figure(6)
+clf 
+set(gcf,'renderer','Painters')
 
 p = pars_LM; 
 
@@ -161,7 +168,7 @@ for i = 1:length(tau_H)
     
     figure(6)
     hold on  
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -171,6 +178,7 @@ clear p s tau_H
 
 figure(7)
 clf 
+set(gcf,'renderer','Painters')
 
 p = pars_LM; 
 
@@ -186,7 +194,7 @@ for i = 1:length(tau_pb)
     
     figure(7)
     hold on
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -195,6 +203,8 @@ clear p s tau_pb
 %% tau_b
 
 figure(8)
+clf 
+set(gcf,'renderer','Painters')
 
 p = pars_LM; 
 
@@ -210,7 +220,7 @@ for i = 1:length(tau_b)
     
     figure(8)
     hold on 
-    plot(time,HR,'Color',[0.9 0.9 0.9],'linewidth',5)
+    plot(time,HR,'c','linewidth',5)
     
 end 
 
@@ -306,12 +316,12 @@ xlabel('Time (s)')
 set(gca,'XTick',xtick)
 set(gca,'YTick',ytick)
 
-print(hfig1,'-depsc2','q_w.eps')
-print(hfig2,'-depsc2','s_s.eps')
-print(hfig3,'-depsc2','B.eps')
-print(hfig4,'-depsc2','s_pb.eps')
-print(hfig5,'-depsc2','tau_s.eps')
-print(hfig6,'-depsc2','tau_H.eps')
-print(hfig7,'-depsc2','tau_pb.eps')
-print(hfig8,'-depsc2','tau_b.eps')
+print(hfig1,'-depsc2','-tiff','-r300','q_w.eps')
+print(hfig2,'-depsc2','-tiff','-r300','s_s.eps')
+print(hfig3,'-depsc2','-tiff','-r300','B.eps')
+print(hfig4,'-depsc2','-tiff','-r300','s_pb.eps')
+print(hfig5,'-depsc2','-tiff','-r300','tau_s.eps')
+print(hfig6,'-depsc2','-tiff','-r300','tau_H.eps')
+print(hfig7,'-depsc2','-tiff','-r300','tau_pb.eps')
+print(hfig8,'-depsc2','-tiff','-r300','tau_b.eps')
 
