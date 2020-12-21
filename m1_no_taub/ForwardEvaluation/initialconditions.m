@@ -23,14 +23,14 @@ ss  = pars(19);
 %% INITIAL CONDITIONS
 
 Pc_0  = data.Pdata(1); 
-Gwc_0 = 1 - sqrt((1 + exp(-qw*(Pc_0 - sw)))/(A + exp(-qw*(Pc_0 - sw)))); 
-ebc_0 = Kb*Gwc_0; 
-ec_0  = Gwc_0 - ebc_0; 
+Gbc_0 = 1 - sqrt((1 + exp(-qw*(Pc_0 - sw)))/(A + exp(-qw*(Pc_0 - sw)))); 
+ebc_0 = Kb*Gbc_0; 
+ec_0  = Gbc_0 - ebc_0; 
 
 Pa_0  = data.Pdata(1) - data.Pthdata(1); 
-Gwa_0 = 1 - sqrt((1 + exp(-qw*(Pa_0 - sw)))/(A + exp(-qw*(Pa_0 - sw)))); 
-eba_0 = Kb*Gwa_0; 
-ea_0  = Gwa_0 - eba_0; 
+Gba_0 = 1 - sqrt((1 + exp(-qw*(Pa_0 - sw)))/(A + exp(-qw*(Pa_0 - sw)))); 
+eba_0 = Kb*Gba_0; 
+ea_0  = Gba_0 - eba_0; 
 
 n_0   = B*ec_0 + (1 - B)*ea_0;
 

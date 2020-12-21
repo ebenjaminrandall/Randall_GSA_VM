@@ -49,14 +49,14 @@ Hs = (1/Ks)*(HM/HI - 1);
 %% Calculate sigmoid shifts
 
 Pc_ss  = Pbar; 
-Gwc_ss = 1 - sqrt((1 + exp(-qw*(Pc_ss - sw)))/(A + exp(-qw*(Pc_ss - sw)))); 
-ebc_ss = Kb*Gwc_ss; 
-ec_ss  = Gwc_ss - ebc_ss; 
+Gbc_ss = 1 - sqrt((1 + exp(-qw*(Pc_ss - sw)))/(A + exp(-qw*(Pc_ss - sw)))); 
+ebc_ss = Kb*Gbc_ss; 
+ec_ss  = Gbc_ss - ebc_ss; 
 
 Pa_ss  = Pbar - Pthbar; 
-Gwa_ss = 1 - sqrt((1 + exp(-qw*(Pa_ss - sw)))/(A + exp(-qw*(Pa_ss - sw)))); 
-eba_ss = Kb*Gwa_ss; 
-ea_ss  = Gwa_ss - eba_ss; 
+Gba_ss = 1 - sqrt((1 + exp(-qw*(Pa_ss - sw)))/(A + exp(-qw*(Pa_ss - sw)))); 
+eba_ss = Kb*Gba_ss; 
+ea_ss  = Gba_ss - eba_ss; 
 
 n_ss   = B*ec_ss + (1 - B)*ea_ss;
 
