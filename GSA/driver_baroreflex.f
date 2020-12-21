@@ -283,7 +283,7 @@ C----------------------------------------------------------------------
         REAL(kind=DP), dimension(:), allocatable :: RSPL(:)
         REAL(kind=DP), dimension(3) :: IPAR
         REAL(kind=DP) :: Pc, Pthor, Resp
-        REAL(kind=DP) :: ewc, ec, Pa, ewa, ea, nb, Gpb, Gs
+        REAL(kind=DP) :: Gbc, ec, Pa, Gba, ea, nb, Gpb, Gs
         REAL(kind=DP) :: Gpr, Htilde
         EXTERNAL PHI,ARGLAG
 
@@ -363,12 +363,12 @@ C       FIRST DELAY
         Hpr   = PAR(22)
         Hs    = PAR(23)
         
-        ewc = 1-SQRT((1+EXP(-qw*(Pc-sw)))/(A+EXP(-qw*(Pc-sw)))) 
-        ec  = ewc-Y(1)
+        Gbc = 1-SQRT((1+EXP(-qw*(Pc-sw)))/(A+EXP(-qw*(Pc-sw)))) 
+        ec  = Gbc-Y(1)
 
         Pa  = Pc - Pthor
-        ewa = 1-SQRT((1+EXP(-qw*(Pa-sw)))/(A+EXP(-qw*(Pa-sw))))
-        ea  = ewa-Y(2)
+        Gba = 1-SQRT((1+EXP(-qw*(Pa-sw)))/(A+EXP(-qw*(Pa-sw))))
+        ea  = Gba-Y(2)
 
         nb = B*ec+(1-B)*ea
         

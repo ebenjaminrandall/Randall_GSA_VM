@@ -7,6 +7,7 @@ Pbar   = data.Pbar;
 HminR  = data.HminR; 
 HmaxR  = data.HmaxR; 
 Hbar   = data.Hbar; 
+Pthbar = data.Pthbar;
 
 %% PARAMETERS  
 
@@ -24,7 +25,7 @@ taupr = 6;
 taus  = 10;          
 tauH  = 0.5;
 
-qw   = .04;        
+qw   = 0.04;        
 qpb  = 10;          
 qpr  = 1; 
 qs   = 10;          
@@ -34,33 +35,33 @@ Ds   = 3;
 %% Patient specific parameters
 
 sw  = Pbar;           
-spr = data.Pthbar;  
+spr = Pthbar;  
 
 %Intrinsic HR
-HI = 118 - .57*age;  
+HI = 118 - 0.57*age;  
 if HI < Hbar 
     HI = Hbar;
 end 
 %Maximal HR
-HM = 208 - .7*age;    
+HM = 208 - 0.7*age;    
 Hs = (1/Ks)*(HM/HI - 1); 
 
 %% Calculate sigmoid shifts
 
-Pc_ss  = data.Pbar; 
-ewc_ss = 1 - sqrt((1 + exp(-qw*(Pc_ss - sw)))/(A + exp(-qw*(Pc_ss - sw)))); 
-ebc_ss = Kb*ewc_ss; 
-ec_ss  = ewc_ss - ebc_ss; 
+Pc_ss  = Pbar; 
+Gwc_ss = 1 - sqrt((1 + exp(-qw*(Pc_ss - sw)))/(A + exp(-qw*(Pc_ss - sw)))); 
+ebc_ss = Kb*Gwc_ss; 
+ec_ss  = Gwc_ss - ebc_ss; 
 
-Pa_ss  = data.Pbar - data.Pthbar; 
-ewa_ss = 1 - sqrt((1 + exp(-qw*(Pa_ss - sw)))/(A + exp(-qw*(Pa_ss - sw)))); 
-eba_ss = Kb*ewa_ss; 
-ea_ss  = ewa_ss - eba_ss; 
+Pa_ss  = Pbar - Pthbar; 
+Gwa_ss = 1 - sqrt((1 + exp(-qw*(Pa_ss - sw)))/(A + exp(-qw*(Pa_ss - sw)))); 
+eba_ss = Kb*Gwa_ss; 
+ea_ss  = Gwa_ss - eba_ss; 
 
 n_ss   = B*ec_ss + (1 - B)*ea_ss;
 
-Tpb_ss = .8;
-Ts_ss  = .2; 
+Tpb_ss = 0.8;
+Ts_ss  = 0.2; 
 
 %Steady-state sigmoid shifts 
 spb = n_ss + log(Kpb/Tpb_ss - 1)/qpb;  
@@ -68,10 +69,10 @@ ss  = n_ss -  log(Ks/Ts_ss - 1)/qs;
 
 %% At end of expiration and inspiration
 
-Gpr_ss = 1/(1 + exp(qpr*(data.Pthbar - spr)));
+Gpr_ss = 1/(1 + exp(qpr*(Pthbar - spr)));
 
 Tpr_ss = Kpr*Gpr_ss; 
-Hpr = (HmaxR - HminR)/HI/Tpr_ss ;
+Hpr = (HmaxR - HminR)/HI/Tpr_ss;
 
 Hpb = (1 - Hbar/HI + Hpr*Tpr_ss + Hs*Ts_ss)/Tpb_ss;
 
@@ -88,31 +89,31 @@ pars = [A; B;
 %% Parameter bounds
 
 %Vary nominal parameters by +/- 50%
-lb  = pars*.5; 
+lb  = pars*0.5; 
 ub  = pars*1.5;
 
 %B - Convex combination
-lb(2)  = .01;                       
+lb(2)  = 0.01;                       
 ub(2)  = 1;                        
 
 %K_b - Allowed to vary to contain literature values
-lb(3)  = .1;                        
+lb(3)  = 0.1;                        
 ub(3)  = 10;                        
 
 %K_pb - Allowed to vary to contain literature values
-lb(4)  = .1;                      
+lb(4)  = 0.1;                      
 ub(4)  = 10;                       
 
 %K_pr - Allowed to vary to contain literature values
-lb(5)  = .1;                        
+lb(5)  = 0.1;                        
 ub(5)  = 10;                      
 
 %K_s - Allowed to vary to contain literature values
-lb(6)  = .1;                       
+lb(6)  = 0.1;                       
 ub(6)  = 10;                
 
 %tau_b - Allowed to vary to contain literature values
-lb(7)  = .01;                      
+lb(7)  = 0.01;                      
 ub(7)  = 1.5;             
 
 %tau_pb - M p/m 2 SD 

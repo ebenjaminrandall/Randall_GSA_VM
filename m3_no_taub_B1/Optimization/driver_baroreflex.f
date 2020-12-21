@@ -7,7 +7,7 @@ C       Use make command (relevant to Makefile)
 
         INTEGER, PARAMETER :: DP=kind(1D0)
 C --->  PARAMETERS FOR RADAR5 (FULL JACOBIAN) <---
-        INTEGER, PARAMETER :: ND=4
+        INTEGER, PARAMETER :: ND=6
         INTEGER, PARAMETER :: NRDENS=1
         INTEGER, PARAMETER :: NGRID=1
         INTEGER, PARAMETER :: NLAGS=1
@@ -37,7 +37,6 @@ C --->  PARAMETERS FOR RADAR5 (FULL JACOBIAN) <---
         REAL(kind=DP) :: Delay,dt
         EXTERNAL  FCN,PHI,ARGLAG,JFCN,JACLAG,SOLOUT
 
-        
 C ------ FILE TO OPEN ----------
         OPEN(9,FILE='sol.out')
         OPEN(10,FILE='cont.out')
@@ -139,7 +138,7 @@ C --- DIFFERENTIAL EQUATION IS IN EXLPICIT FORM
 C --- OUTPUT ROUTINE IS USED DURING INTEGRATION
         IOUT=1
 C --- Delay
-        Delay = PAR(21)
+        Delay = PAR(24)
 C --- Initial Conditions        
         Y = INIT        
 C --- INITIAL VALUES 
@@ -162,7 +161,7 @@ C --- WORKSPACE FOR PAST
         IWORK(12)=MXST
 C --- THE FOURTH COMPONENT USES RETARDED ARGUMENTS
         IWORK(15)=NRDENS
-        IPAST(1)=3
+        IPAST(1)=5
 C ---  SET THE PRESCRIBED GRID-POINTS
         DO I=1,NGRID
           GRID(I)=Delay*I
@@ -180,7 +179,7 @@ C --- CALL OF THE SUBROUTINE RADAR5
      &                  GRID,IPAST,DUMMY,MLMAS,MUMAS)
 
 !C --- PRINT FINAL SOLUTION SOLUTION
-        WRITE (6,*) X,Y(1),Y(2),Y(3),Y(4)
+        WRITE (6,*) X,Y(1),Y(2),Y(3),Y(4),Y(5),Y(6)
         WRITE(6,*)' ***** TOL=',RTOL,' ****'
         WRITE(6,*) 'SOLUTION IS TABULATED IN FILES: sol.out & cont.out'
 
@@ -216,10 +215,10 @@ C       XOUT IS USED FOR THE DENSE OUTPUT
 
         XEND = TIME(NTIME)
         
-        WRITE (9,*) X,Y(1),Y(2),Y(3),Y(4)
+        WRITE (9,*) X,Y(1),Y(2),Y(3),Y(4),Y(5),Y(6)
 
         IF (NR.EQ.1) THEN
-           WRITE (10,*) X,Y(1),Y(2),Y(3),Y(4)
+           WRITE (10,*) X,Y(1),Y(2),Y(3),Y(4),Y(5),Y(6)
            XOUT=XSTEP
         ELSE
  10        CONTINUE
@@ -227,7 +226,9 @@ C       XOUT IS USED FOR THE DENSE OUTPUT
               WRITE (10,*) XOUT,CONTR5(1,N,XOUT,CONT,X,HSOL),
      &                           CONTR5(2,N,XOUT,CONT,X,HSOL),
      &                           CONTR5(3,N,XOUT,CONT,X,HSOL),
-     &                           CONTR5(4,N,XOUT,CONT,X,HSOL)
+     &                           CONTR5(4,N,XOUT,CONT,X,HSOL),
+     &                           CONTR5(5,N,XOUT,CONT,X,HSOL),
+     &                           CONTR5(6,N,XOUT,CONT,X,HSOL)
 
               XOUT=XOUT+XSTEP
               GOTO 10
@@ -238,7 +239,9 @@ C       XOUT IS USED FOR THE DENSE OUTPUT
                      WRITE (10,*) XEND,CONTR5(1,N,XEND,CONT,X,HSOL),
      &                           CONTR5(2,N,XEND,CONT,X,HSOL),
      &                           CONTR5(3,N,XEND,CONT,X,HSOL),
-     &                           CONTR5(4,N,XEND,CONT,X,HSOL)
+     &                           CONTR5(4,N,XEND,CONT,X,HSOL),
+     &                           CONTR5(5,N,XEND,CONT,X,HSOL),
+     &                           CONTR5(6,N,XEND,CONT,X,HSOL)
 
         END IF
              
@@ -255,7 +258,7 @@ C
         REAL(kind=DP), dimension(60000) :: RPAR
         INTEGER, dimension(1) :: IPAR
         
-        ARGLAG=X-RPAR(1+21)
+        ARGLAG=X-RPAR(1+24)
 
         RETURN
         END
@@ -280,7 +283,7 @@ C----------------------------------------------------------------------
         REAL(kind=DP), dimension(:), allocatable :: RSPL(:)
         REAL(kind=DP), dimension(3) :: IPAR
         REAL(kind=DP) :: Pc, Pthor, Resp
-        REAL(kind=DP) :: ewc, Pa, ewa, nb, Gpb, Gs
+        REAL(kind=DP) :: Gbc, ec, Pa, Gba, ea, nb, Gpb, Gs
         REAL(kind=DP) :: Gpr, Htilde
         EXTERNAL PHI,ARGLAG
 
@@ -328,7 +331,7 @@ C       FIRST DELAY
      &       PHI,IPAST,NRDS)
 
 
-        Y3L1=YLAGR5(3,ALPHA1,IPOS1,PHI,RPAR,IPAR,
+        Y5L1=YLAGR5(5,ALPHA1,IPOS1,PHI,RPAR,IPAR,
      &       PAST,IPAST,NRDS)
         
 !     --- INTERPOLATE DATA
@@ -337,39 +340,51 @@ C       FIRST DELAY
         CALL splint(TIME,R,RSPL,NTIME,X,Resp,dt)
         
         A     = PAR(1)
-        Kpb   = PAR(2)
-        Kpr   = PAR(3)
-        Ks    = PAR(4)
-        taupb = PAR(5)
-        taupr = PAR(6)
-        taus  = PAR(7)
-        tauH  = PAR(8)
-        qw    = PAR(9)
-        qpb   = PAR(10)
-        qpr   = PAR(11)
-        qs    = PAR(12)
-        sw    = PAR(13)
-        spb   = PAR(14)
-        spr   = PAR(15)
-        ss    = PAR(16)
-        HI    = PAR(17)
-        Hpb   = PAR(18)
-        Hpr   = PAR(19)
-        Hs    = PAR(20)
+        B     = PAR(2)
+        Kb    = PAR(3)
+        Kpb   = PAR(4)
+        Kpr   = PAR(5)
+        Ks    = PAR(6)
+        taub  = PAR(7)
+        taupb = PAR(8)
+        taupr = PAR(9)
+        taus  = PAR(10)
+        tauH  = PAR(11)
+        qw    = PAR(12)
+        qpb   = PAR(13)
+        qpr   = PAR(14)
+        qs    = PAR(15)
+        sw    = PAR(16)
+        spb   = PAR(17)
+        spr   = PAR(18)
+        ss    = PAR(19)
+        HI    = PAR(20)
+        Hpb   = PAR(21)
+        Hpr   = PAR(22)
+        Hs    = PAR(23)
+        
+        Gbc = 1-SQRT((1+EXP(-qw*(Pc-sw)))/(A+EXP(-qw*(Pc-sw)))) 
+        ec  = Gbc-Y(1)
 
-        ewc = 1-SQRT((1+EXP(-qw*(Pc-sw)))/(A+EXP(-qw*(Pc-sw))))
+        Pa  = Pc - Pthor
+        Gba = 1-SQRT((1+EXP(-qw*(Pa-sw)))/(A+EXP(-qw*(Pa-sw))))
+        ea  = Gba-Y(2)
 
-        Gpb = 1/(1 + EXP(-qpb*(ewc - spb)))
-        Gs = 1/(1 + EXP(qs*(ewc - ss)))
+        nb = B*ec+(1-B)*ea
+        
+        Gpb = 1/(1 + EXP(-qpb*(nb- spb)))
+        Gs = 1/(1 + EXP(qs*(nb - ss)))
 
         Gpr = 1/(1 + EXP(qpr*(Pthor - spr)))
 
-        Htilde = HI*(1 - Hpb*Y(1) + Hpr*Y(2) + Hs*Y(3))
+        Htilde = HI*(1 - Hpb*Y(3) + Hpr*Y(4) + Hs*Y(5))
 
-        F(1) = (-Y(1) + Kpb*Gpb)/taupb
-        F(2) = (-Y(2) + Kpr*Gpr)/taupr
-        F(3) = (-Y3L1 + Ks*Gs)/taus
-        F(4) = (-Y(4) + Htilde)/tauH
+        F(1) = (-Y(1) + Kb*ewc)/taub
+        F(2) = (-Y(2) + Kb*ewa)/taub
+        F(3) = (-Y(3) + Kpb*Gpb)/taupb
+        F(4) = (-Y(4) + Kpr*Gpr)/taupr
+        F(5) = (-Y5L1 + Ks*Gs)/taus
+        F(6) = (-Y(6) + Htilde)/tauH
         
         RETURN
         END
@@ -405,9 +420,9 @@ C ----- JACOBIAN OF DELAY TERMS IN THE EQUATION
         EXTERNAL PHI
         
         IVL(1)=1
-        IVE(1)=3
-        IVC(1)=3
-        DFYL(1)= -1/RPAR(1+7)
+        IVE(1)=5
+        IVC(1)=5
+        DFYL(1)= -1/RPAR(1+10)
 
         RETURN
         END
@@ -432,6 +447,8 @@ C-----------------------------------------------------------------------
             PHI=INIT(3)
         CASE (4)
            PHI=INIT(4)
+        CASE (5)
+           PHI=INIT(5)
         END SELECT
         RETURN
         END

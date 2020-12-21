@@ -1,47 +1,42 @@
 function Init = initialconditions(pars,data)
-%{
-initialconditions.m
-This function computes the initial conditions for the m2 reduced model.
-
-Inputs:
-    pars:   vector of log-scaled nominal parameter values
-    data:   structure that contains all preprocessed VM data
-
-Outputs:
-    Init:   vector of initial conditions for differential equations
-%}
 
 %% PARAMETERS 
 
 A  = pars(1);
+B  = pars(2);
 
-Kpb = pars(2);
-Kpr = pars(3);
-Ks  = pars(4); 
+Kb  = pars(3);
+Kpb = pars(4);
+Kpr = pars(5);
+Ks  = pars(6); 
 
-qw  = pars(9); 
-qpb = pars(10);
-qpr = pars(11); 
-qs  = pars(12);
+qw  = pars(12); 
+qpb = pars(13);
+qpr = pars(14); 
+qs  = pars(15);
 
-sw  = pars(13); 
-spb = pars(14);
-spr = pars(15); 
-ss  = pars(16);
+sw  = pars(16); 
+spb = pars(17);
+spr = pars(18); 
+ss  = pars(19);
 
 %% INITIAL CONDITIONS
 
-%Pc_0  = data.Pdata(1); 
-%ewc_0 = 1 - sqrt((1 + exp(-qw*(Pc_0 - sw)))/(A + exp(-qw*(Pc_0 - sw)))); 
+Pc_0  = data.Pdata(1); 
+Gwc_0 = 1 - sqrt((1 + exp(-qw*(Pc_0 - sw)))/(A + exp(-qw*(Pc_0 - sw)))); 
+ebc_0 = Kb*Gwc_0; 
+ec_0  = Gwc_0 - ebc_0; 
 
 Pa_0  = data.Pdata(1) - data.Pthdata(1); 
-ewa_0 = 1 - sqrt((1 + exp(-qw*(Pa_0 - sw)))/(A + exp(-qw*(Pa_0 - sw)))); 
+Gwa_0 = 1 - sqrt((1 + exp(-qw*(Pa_0 - sw)))/(A + exp(-qw*(Pa_0 - sw)))); 
+eba_0 = Kb*Gwa_0; 
+ea_0  = Gwa_0 - eba_0; 
 
-%n_0   = B*ewc_0 + (1 - B)*ewa_0;
+n_0   = B*ec_0 + (1 - B)*ea_0;
 
-Gpb_0 = 1/(1 + exp(-qpb*(ewa_0 - spb)));
+Gpb_0 = 1/(1 + exp(-qpb*(n_0 - spb)));
 Gpr_0 = 1/(1 + exp(qpr*(data.Pthdata(1) - spr)));
-Gs_0  = 1/(1 + exp(qs*(ewa_0 - ss))); 
+Gs_0  = 1/(1 + exp(qs*(n_0 - ss))); 
 
 Tpb_0 = Kpb*Gpb_0; 
 Tpr_0 = Kpr*Gpr_0;
@@ -49,6 +44,4 @@ Ts_0  = Ks*Gs_0;
 
 %% OUTPUT
 
-Init = [Tpb_0; Tpr_0; Ts_0; data.Hdata(1)];
-
-end
+Init = [ebc_0; eba_0; Tpb_0; Tpr_0; Ts_0; data.Hdata(1)];
