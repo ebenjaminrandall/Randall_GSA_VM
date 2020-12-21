@@ -1,7 +1,5 @@
-function outputs = tvSob(nsamples,bounds,data,varargin)
+function outputs = genSob_v4(nsamples,bounds,data,varargin)
 %{
-This code computes the scalar and time-varying Sobol' indices. 
-
 Inputs: 
     nsamples:   integer for number of sample points taken from space.
     bounds:     [(lower bounds) (upper bound)] is a p x 2 matrix. 
@@ -11,10 +9,6 @@ Inputs:
                 field. 
     varargin:   contains the following options 
         'parallelComp' - can turn 'on'. Default set to 'off' 
-
-Output:
-    outputs:    structure including scalar and time-varying Sobol' indices
-                and the parameter variances 
 
 This function calls model_sol_GSA.m which is a function that evaluates your 
 model of the form 
@@ -116,17 +110,22 @@ end
 
 %% Evaluate function over the rows of C and Ai 
 
-%Solve model initially 
-initsoln = model_wrap_GSA(C(1,:),data); 
+broken = [];
+
+% Solve model initially 
+ndone = 0; 
+while ndone == 0
+    initsoln = model_wrap_GSA(C(1,:),data); 
+    if ~isempty(initsoln)
+        ndone = 1; 
+    end 
+end 
+clearvars ndone 
 
 if length(initsoln) == 1
     scalar = 1; 
-    
-    %Preallocate 
     fC_sca = ones(2*M,1);
     fAi_sca = ones(M*p,1);
-    
-    %Add initial solve
     fC_sca(1) = initsoln;
 else
     scalar = 0;
@@ -135,84 +134,154 @@ else
     end
     time = data.time;
     
-    %Determine orientation of solution
     [r,c] = size(initsoln);
     if r>c
         column = 1;
         initsoln = initsoln';
     end    
-    
-    %Preallocate
     fC_gen  = ones(2*M, length(time));
     fC_sca  = ones(2*M,1);
     fAi_gen = ones(M*p, length(time));
     fAi_sca = ones(M*p,1);
-    
-    %Add initial solve
     fC_gen(1,:) = initsoln;
     fC_sca(1) = norm(fC_gen(1,:));
 end
 
-%Solve the model the rest of the way
-if parallel %Only if 'parallel' is 'on'
-    parfor i = 2:2*M
-        %Solve model 
-        s_C = model_wrap_GSA(C(i,:),data); 
-        sol_C = s_C; 
-        
-        %Store solution properly
-        if scalar
-            fC_sca(i)   = sol_C;
-        else
+%% Solve the model the rest of the way
+
+if scalar
+    if parallel %Only if 'parallel' is 'on'
+        parfor i = 2:2*M
+
+            %Solve model 
+            ndone = 0; 
+            s_C = []; 
+            while ndone == 0
+                s_C = model_wrap_GSA(C(i,:),data); 
+                if ~isempty(s_C)
+                    ndone = 1;
+                end 
+            end 
+            sol_C = s_C; 
+            fC_sca(i) = sol_C;
+        end
+
+        parfor i = 1:M*p
+
+            % Solve model 
+            ndone = 0; 
+            s_Ai = []; 
+            while ndone == 0
+                s_Ai = model_wrap_GSA(Ai(i,:),data); 
+                if ~isempty(s_Ai)
+                    ndone = 1;
+                end 
+            end 
+            sol_Ai = s_Ai; 
+            fAi_sca(i) = sol_Ai; 
+        end 
+    else
+        for i = 2:2*M
+            disp('C percent done')
+            disp([i/(2*M)])
+            %Solve model 
+            ndone = 0; 
+            while ndone == 0
+                sol_C = model_wrap_GSA(C(i,:),data); 
+                if ~isempty(sol_C)
+                    ndone = 1;
+                end 
+            end 
+            fC_sca(i) = sol_C;  
+        end
+
+        for i = 1:M*p
+            disp('Ai percent done')
+            disp([i/(M*p)])
+            % Solve model 
+            ndone = 0; 
+            while ndone == 0
+                sol_Ai = model_wrap_GSA(Ai(i,:),data); 
+                if ~isempty(sol_Ai)
+                    ndone = 1;
+                end 
+            end 
+            fAi_sca(i)   = sol_Ai; 
+        end
+    end
+else 
+    if parallel %Only if 'parallel' is 'on'
+        parfor i = 2:2*M
+
+            %Solve model 
+            ndone = 0; 
+            s_C = []; 
+            while ndone == 0
+                s_C = model_wrap_GSA(C(i,:),data); 
+                if ~isempty(s_C)
+                    ndone = 1;
+                end 
+            end 
+            sol_C = s_C; 
+
             if column
                 sol_C   = sol_C';
             end
             fC_gen(i,:) = sol_C;
             fC_sca(i)   = norm(fC_gen(i,:)); 
         end
-    end
 
-    parfor i = 1:M*p
-        %Solve model 
-        s_Ai = model_wrap_GSA(Ai(i,:),data); 
-        sol_Ai = s_Ai; 
-        
-        %Store solution properly
-        if scalar
-            fAi_sca(i)   = sol_Ai; 
-        else 
+        parfor i = 1:M*p
+
+            % Solve model 
+            ndone = 0; 
+            s_Ai = []; 
+            while ndone == 0
+                s_Ai = model_wrap_GSA(Ai(i,:),data); 
+                if ~isempty(s_Ai)
+                    ndone = 1;
+                end 
+            end 
+            sol_Ai = s_Ai; 
+
             if column
                 sol_Ai   = sol_Ai';
             end
             fAi_gen(i,:) = sol_Ai;
             fAi_sca(i)   = norm(fAi_gen(i,:)); 
         end 
-    end
-else 
-    for i = 2:2*M
-        %Solve model 
-        sol_C = model_wrap_GSA(C(i,:),data); 
-        
-        %Store solution properly
-        if scalar
-            fC_sca(i) = sol_C;  
-        else 
+    else
+        for i = 2:2*M
+            disp('C percent done')
+            disp([i/(2*M)])
+            %Solve model 
+            ndone = 0; 
+            while ndone == 0
+                sol_C = model_wrap_GSA(C(i,:),data); 
+                if ~isempty(sol_C)
+                    ndone = 1;
+                end 
+            end 
+
             if column
                 sol_C = sol_C';
             end
             fC_gen(i,:) = sol_C;
             fC_sca(i)   = norm(fC_gen(i,:));  
         end 
-    end
 
-    for i = 1:M*p
-        % Solve model  
-        sol_Ai = model_wrap_GSA(Ai(i,:),data); 
-        
-        %Store solution properly
-        if scalar
-            fAi_sca(i)   = sol_Ai; 
-        else 
+        for i = 1:M*p
+            disp('Ai percent done')
+            disp([i/(M*p)])
+            % Solve model 
+            ndone = 0; 
+            while ndone == 0
+                sol_Ai = model_wrap_GSA(Ai(i,:),data); 
+                if ~isempty(sol_Ai)
+                    ndone = 1;
+                end 
+            end 
+
             if column
                 sol_Ai = sol_Ai';
             end
@@ -221,10 +290,11 @@ else
         end 
     end
 end 
+              
+
 
 %% Determine time-varying variances 
 
-%Separate solutions
 fA_sca = fC_sca(1:M);
 fB_sca = fC_sca(M+1:end);
 
@@ -233,11 +303,8 @@ if ~scalar
     fB_gen = fC_gen(M+1:end, :);
 end
 
-%Preallocate
 VarSi_sca = ones(p,1);
 VarSTi_sca = ones(p,1);
-
-%Solve variances for main and total effect SI
 for i = 1:p
     VarSi_sca(i) = (1/M)*sum(fB_sca.*(fAi_sca(M*(i-1)+1:M*i)-fA_sca));
     
@@ -246,12 +313,9 @@ end
 VarY_sca = var(fC_sca);
 
 if ~scalar
-    %Preallocate
     VarSi_gen = ones(p, length(time));
     VarSTi_gen = ones(p, length(time));
     VarY_gen   = ones(1, length(time));
-    
-    %Solve variances for main and total effect SI
     for i = 1:p
         for j = 1:length(time)
             VarSi_gen(i,j) = (1/M)*sum(fB_gen(:,j).*(fAi_gen(M*(i-1)+1:M*i,j)-fA_gen(:,j)));
@@ -265,13 +329,11 @@ if ~scalar
     end
 end
 
-%Compute scalar SI
 Si_sca = VarSi_sca/VarY_sca;
 STi_sca = VarSTi_sca/VarY_sca;
 
 %% Outputs
 
-%Determine if scalar or not and save properly
 if scalar == 1
     outputs.varSi  = VarSi_sca;
     outputs.varSTi = VarSTi_sca;
@@ -279,6 +341,7 @@ if scalar == 1
     outputs.Si     = Si_sca;
     outputs.STi    = STi_sca;
     
+    outputs.broken = broken;
 else
     sca.varSi   = VarSi_sca; 
     sca.varSTi  = VarSTi_sca;
@@ -293,9 +356,9 @@ else
     outputs.sca = sca;
     outputs.gen = gen; 
     
+    outputs.broken = broken;
 end 
 
-%Delete parallel pool
 if parallel
     delete(gcp('nocreate'));
 end

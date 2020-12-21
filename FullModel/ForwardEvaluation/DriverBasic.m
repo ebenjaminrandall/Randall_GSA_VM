@@ -1,28 +1,14 @@
-%{
-DriverBasic.m
-This script performs a forward evaulation of the full model.
+%DriverBasic 
 
-It requires the 'FP2_VM6_long.mat' data. 
- 
-The script generates a structure called 'data' to be used in other 
-functions, gets nominal parameter values, evaluates the forward model by 
-calling the Fortran-created executable, calculates clinical ratios, and 
-creates plots.
-
-The model solution and variables are saved in 'nomHR.mat'.
-%}
-
-%Clear workspace
 clear all
-close all
+%close all
 
-%Begin timing
 tic 
 
 %% Inputs
 
-echoon  = 1; %Echo for executable status in model solve
-printon = 0; %Print for data figures
+echoon  = 1; 
+printon = 0; 
 
 %% Load data and preprocess data 
 
@@ -56,11 +42,11 @@ dt = mean(diff(Tnew));
 
 Pdiff    = diff(Pthnew); 
 [~,ts]   = max(Pdiff);      %VM start index
-[~,te]   = min(Pdiff);      %VM end index
+[~,te]   = min(Pdiff);     %VM end index
 h        = Hnew(te:round(te + 5/dt));
 hdiff    = diff(h);
 [~,ind1] = min(hdiff);
-tr       = te + ind1;       %VM reset index
+tr       = te + ind1;                      %VM reset index
 
 %% Find steady-state baseline values up to VM start
 
@@ -79,12 +65,10 @@ if isempty(ind2) == 1
 else 
     t4 = tr + ind2 - 1;
 end 
-
 %Check in case t4 > length of signal 
 if t4 > length(SPnew)
     t4 = length(SPnew); 
 end 
-
 %Check in case t4 = tr
 if t4 == tr 
     ind2 = find(SPnew(tr+round(5/dt):end) >= Pbar,1,'last');
@@ -195,7 +179,7 @@ x_alpha = alphaplot.x_alpha;
 yfit_alpha = alphaplot.yfit_alpha;
 p_alpha = alphaplot.p_alpha; 
 
-%% Set plot limits
+%% :Set plot limits
 
 m_eff = min(min(Tpb,Ts)); 
 if m_eff < 0 
@@ -299,7 +283,7 @@ set(gca,'FontSize',25)
 legend([h1,h2],'PP','SBP')
 set(gca,'XTick',xtick);
 
-%Thoracic Pressure 
+%Thoracic pressure 
 hfig3 = figure(3);
 clf
 patch(x1,yPth,gray)
@@ -342,17 +326,15 @@ ylabel('H (bpm)')
 xlabel('Time (s)')
 set(gca,'XTick',xtick)
 
-if printon == 1
-    print(hfig1,'-depsc2','ecg.eps')
-    print(hfig2,'-depsc2','bp.eps')
-    print(hfig3,'-depsc2','pth.eps')
-    print(hfig4,'-depsc2','hr.eps')
+print(hfig1,'-depsc2','ecg.eps')
+print(hfig2,'-depsc2','bp.eps')
+print(hfig3,'-depsc2','pth.eps')
+print(hfig4,'-depsc2','hr.eps')
 
-    print(hfig1,'-dpng','ecg.png')
-    print(hfig2,'-dpng','bp.png')
-    print(hfig3,'-dpng','pth.png')
-    print(hfig4,'-dpng','hr.png')
-end
+print(hfig1,'-dpng','ecg.png')
+print(hfig2,'-dpng','bp.png')
+print(hfig3,'-dpng','pth.png')
+print(hfig4,'-dpng','hr.png')
 
 %% Make prediction plots 
 
@@ -381,7 +363,7 @@ xlabel('Time (s)')
 legend([h1 h2],'Data','Model')
 set(gca,'XTick',xtick); 
 
-%Baroreceptor Strain
+% %Baroreceptor Strain
 hfig6 = figure(6); 
 clf 
 patch(x1,yaff,gray)
@@ -429,7 +411,7 @@ legend([h1 h2],'T_{p,b}','T_s')
 %ylim([-.1 1.1])
 set(gca,'XTick',xtick);
 
-%Respiration Signal
+%Respiration signal
 hfig8 = figure(8); 
 clf
 patch(x1,yTpr,gray)
@@ -476,5 +458,5 @@ ylabel('SBP (mmHg)')
 set(gca,'FontSize',25)
 set(gca,'Xtick',xtick)
 
-% End timing
+
 elapsed_time = toc

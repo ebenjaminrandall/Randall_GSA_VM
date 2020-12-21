@@ -1,20 +1,8 @@
-%{
-plotLSA.m
-This script plots the sensitivity ranking computed DriverBasic_LSA.m.
 
-It requires 'sens.mat'.
-%}
-
-%Inputs
-printon = 0; %Print for sensitivity rankings
-
-%Load sensitivities
 load sens.mat 
 
-%Ranking the sensitivities
 [Rsens,Isens] = sort(sens_norm(1:23),'descend');
 
-%Thresholds
 eta1 = 1e-1; 
 eta2 = 1e-3; 
 
@@ -49,8 +37,5 @@ set(gca,'Ytick',ytick)
 set(gca,'YScale','log')
 set(gca,'XTickLabels',Xlabel)
 
-%Print figures
-if printon == 1
-    print(hfig1,'-depsc2','LSA.eps')
-    print(hfig1,'-dpng','LSA.png') 
-end
+print(hfig1,'-depsc2','LSA.eps')
+print(hfig1,'-dpng','LSA.png') 

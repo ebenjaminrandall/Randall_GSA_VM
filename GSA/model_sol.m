@@ -1,22 +1,5 @@
 function [HR,rout,J,Outputs] = model_sol(pars,data)
-%{
-model_sol.m
-This function calls the Fortran-created executable to solve the full model.
 
-Inputs:
-    pars:   vector of log-scaled nominal parameter values
-    data:   structure that contains all preprocessed VM data
-
-Outputs:
-    HR:         heart rate solution to differential equations
-    rout:       residual vector (the relative difference between model and
-                data)
-    J:          scalar cost function
-    Outputs:    matrix containing time and other solutions to differential
-                equations
-%}
-
-%Recover parameters
 pars = exp(pars); 
 
 %% Unpack structure 
@@ -95,7 +78,6 @@ if echoon == 1
 else
     [status,blah] = unix('./driver'); 
 end 
-
 s    = load('cont.out');
 time = s(:,1);
 ebc  = s(:,2);
@@ -115,6 +97,7 @@ if round(time(end-1),2) == round(tspan(end),2)
     HR = HR(1:end-1); 
 end 
 
+
 %% Outputs
 
 rout = (HR - Hdata)./Hdata/sqrt(length(Hdata)); 
@@ -123,4 +106,4 @@ J = rout'*rout;
 
 Outputs = [time,ebc,eba,Tpb,Ts,Tpr]; 
 
-end
+

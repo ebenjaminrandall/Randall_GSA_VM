@@ -1,32 +1,24 @@
 %{
-plotGSI.m
-This script plots generalized time-varying Sobol' indices of the full 
-model.
+Plots generalzied time-varying Sobol' indices. 
+%} 
 
-It requires 'differentwindows.mat'.
-%}
-
-%Clear workspace
 clear all
 close all 
 
-%Load data
-load differentwindows.mat
+load differentwindowstest.mat
 
-%Inputs
-printon = 0; 
+%INDMAP = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16  18  20 21 22 23]; 
+printon = 1; 
 
-%Preprocess data
+
 xx = 1:length(Tnew(2:end)); %find(Tnew >= 15 & Tnew <= Tnew(end)-15); 
 tt = Tnew(2:end); 
 tt = tt - tt(1); 
 
-xlimits = [time(1) time(end)]; %[0 60];
-
-%Thresholds
+xlimits = [time(1) time(end)]; %[0 60]; 
 eta1 = 1e-1; 
 eta2 = 1e-3; 
-fontS = 10; 
+fontS = 8; 
 
 %% Most influential 
 
@@ -35,15 +27,15 @@ hfig10 = figure(10);
 clf
 set(gcf,'units','normalized','outerposition',[0 0 .45 .3]); 
 
-h = plot(tt,STi_0(I_STi(1:5),:),'linewidth',1); 
+h = semilogy(tt,STi_0(I_STi(1:5),:),'linewidth',1); 
 hold on 
 plot(xlimits,eta1*ones(2,1),'k--',xlimits,eta2*ones(2,1),'k--')
 plot(Tnew(ts)*ones(2,1),ylimits,'k-.',Tnew(t4)*ones(2,1),ylimits,'k-.')
 plot(xlimits,zeros(2,1),'k')
 txt = '$\eta_1$'; 
-text(Tnew(end)+1,eta1,txt,'interpreter','latex','Fontsize',fontS)
+text(Tnew(end)+.5,eta1,txt,'interpreter','latex','Fontsize',fontS)
 txt = '$\eta_2$'; 
-text(Tnew(end)+1,eta2,txt,'interpreter','latex','Fontsize',fontS)
+text(Tnew(end)+.5,eta2,txt,'interpreter','latex','Fontsize',fontS)
 
 set(gca,'FontSize',fontS)
 
@@ -51,8 +43,8 @@ xlim(xlimits)
 xtick = Tnew(1):30:Tnew(end); 
 set(gca,'Xtick',xtick)
 
-ylim(ylimits)
-ytick = 0:.2:ylimits(end); 
+ylim([1e-2 1])
+ytick = [1e-2 1e-1 1];% 0:.2:ylimits(end); 
 set(gca,'Ytick',ytick)
 
 legend(h,params(INDMAP(I_STi(1:5))),'interpreter','latex','location','northwest')
@@ -64,15 +56,15 @@ hfig11 = figure(11);
 clf
 set(gcf,'units','normalized','outerposition',[0 0 .45 .3])
 
-h = plot(tt,STi_0(I_STi(6:14),xx),'linewidth',1); 
+h = semilogy(tt,STi_0(I_STi(6:15),xx),'linewidth',1); 
 hold on 
 plot(xlimits,eta1*ones(2,1),'k--',xlimits,eta2*ones(2,1),'k--')
 plot(Tnew(ts)*ones(2,1),ylimits,'k-.',Tnew(t4)*ones(2,1),ylimits,'k-.')
 plot(xlimits,zeros(2,1),'k')
 txt = '$\eta_1$'; 
-text(Tnew(end)+1,eta1,txt,'interpreter','latex','Fontsize',fontS)
+text(Tnew(end)+.5,eta1,txt,'interpreter','latex','Fontsize',fontS)
 txt = '$\eta_2$'; 
-text(Tnew(end)+1,eta2,txt,'interpreter','latex','Fontsize',fontS)
+text(Tnew(end)+.5,eta2,txt,'interpreter','latex','Fontsize',fontS)
 
 set(gca,'FontSize',fontS)
 
@@ -80,26 +72,26 @@ xlim(xlimits)
 xtick = Tnew(1):30:Tnew(end); 
 set(gca,'Xtick',xtick)
 
-ylim(ylimits)
-ytick = 0:.05:ylimits(end); 
+ylim([3e-5 1.5e-1])
+ytick = [1e-4 1e-2]; %0:.05:ylimits(end); 
 set(gca,'Ytick',ytick)
 
-legend(h,params(INDMAP(I_STi(6:14))),'interpreter','latex','location','northwest')
+legend(h,params(INDMAP(I_STi(6:15))),'interpreter','latex','location','northwest')
 
 %% Least influential 
 
-ylimits = [-.0001 .0055]; 
+ylimits = [-.0001 .0045]; 
 hfig12 = figure(12); 
 clf
 set(gcf,'units','normalized','outerposition',[0 0 .45 .3]); 
 
-h = plot(tt,STi_0(I_STi(15:length(I_STi)),xx),'linewidth',1); 
+h = semilogy(tt,STi_0(I_STi(16:length(I_STi)),xx),'linewidth',1); 
 hold on 
 plot(xlimits,eta2*ones(2,1),'k--')
 plot(Tnew(ts)*ones(2,1),ylimits,'k-.',Tnew(t4)*ones(2,1),ylimits,'k-.')
 plot(xlimits,zeros(2,1),'k')
 txt = '$\eta_2$'; 
-text(55,.0002,txt,'interpreter','latex','Fontsize',fontS)
+text(Tnew(end)+.5,eta2,txt,'interpreter','latex','Fontsize',fontS)
 
 set(gca,'FontSize',fontS)
 
@@ -107,13 +99,13 @@ xlim(xlimits)
 xtick = Tnew(1):30:Tnew(end); 
 set(gca,'Xtick',xtick)
 
-ylim(ylimits)
-ytick = 0:.005:ylimits(end); 
+ylim([1e-7 5e-3])
+ytick = [1e-6 1e-4];% 0:.002:ylimits(end); 
 set(gca,'Ytick',ytick)
 
-legend(h,params(INDMAP(I_STi(15:length(I_STi)))),'interpreter','latex','location','northwest') 
-
+legend(h,params(INDMAP(I_STi(16:length(I_STi)))),'interpreter','latex','location','northwest')
 %% Print figs 
+
 
 if printon == 1
     print(hfig10,'-depsc2','STiGen_most.eps')

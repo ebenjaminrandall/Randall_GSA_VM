@@ -1,30 +1,17 @@
-%{
-DriverBasic_LSA.m
-This script performs local sensitivity analysis (LSA) on the full model
-computed by ../ForwardEvaluation/DriverBasic.
 
-It requires 'nomHR.mat' in the ForwardEvaluation folder, i.e. it requires
-'../ForwardEvaluation/nomHR.mat'. 
- 
-The script performs LSA via finite forward differences (via senseq.m),
-generates the sensitivity matrix (via senseq.m), and ranks the Euclidean
-norm of the sensitivities.
+%DriverBasic_sens
 
-The sensitivity matrix and rankings are saved in 'sens.mat'.
-%}
-
-%Clear workspace
 clear all
 close all
 
-%Begin timing
 tic 
                                 
 %% Load data  
 
 load ../ForwardEvaluation/nomHR.mat 
 
-echoon  = 0; %Echo for executable status in model solve
+echoon  = 0; 
+printon = 0; 
 
 %% Get nominal parameter values
 
@@ -45,7 +32,7 @@ sens = senseq(pars,data);
 
 sens = abs(sens); 
 
-%ranked classical sensitivities
+% ranked classical sensitivities
 [M,N] = size(sens);
 for i = 1:N 
     sens_norm(i)=norm(sens(:,i),2);
@@ -63,8 +50,6 @@ params = {'$A$', '$B$', ...
     '$H_I$','$H_{pb}$','$H_{pr}$','$H_{s}$', ...
     '$D_s$'}; 
 
-%Save sensitivity results
 save sens.mat
 
-%End timing
 elapsed_time = toc

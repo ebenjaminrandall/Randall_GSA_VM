@@ -1,19 +1,4 @@
 function [pars, lb, ub] = load_global(data)
-%{
-load_global.m
-This function determines log-scaled nominal parameter values and bounds for
-full model.
-
-Inputs:
-    data:   structure that contains all preprocessed VM data
-
-Outputs:
-    pars:   vector of log-scaled nominal parameter values
-    lb:     vector of log-scaled lower parameter bounds
-    ub:     vector of log-scaled upper parameter bounds
-%}
-
-%% Extract data from structure
 
 age    = data.age;  
 
@@ -57,7 +42,6 @@ HI = 118 - 0.57*age;
 if HI < Hbar 
     HI = Hbar;
 end 
-
 %Maximal HR
 HM = 208 - 0.7*age;    
 Hs = (1/Ks)*(HM/HI - 1); 
@@ -92,7 +76,7 @@ Hpr = (HmaxR - HminR)/HI/Tpr_ss;
 
 Hpb = (1 - Hbar/HI + Hpr*Tpr_ss + Hs*Ts_ss)/Tpb_ss;
 
-%% Parameter consolidation
+%% Outputs
 
 pars = [A; B;              
     Kb; Kpb; Kpr; Ks;               %Gains
